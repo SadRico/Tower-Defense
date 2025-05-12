@@ -1,42 +1,45 @@
 package db;
 
-import java.sql.*;
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DatabaseManager {
-    private String dbPath;
     private Connection connection;
+    private String dbPath;
 
     public DatabaseManager(String dbPath) {
         this.dbPath = dbPath;
     }
 
+    // Verbindung zur Datenbank herstellen
     public void connect() {
         try {
-            // Da 'data' ein Package ist, gehe davon aus, dass die Datei 'game.db' im Ressourcenordner liegt
-            URI dbUri = getClass().getClassLoader().getResource(dbPath).toURI();
-            File dbFile = new File(dbUri);
+            File dbFile = new File(dbPath);
 
-            if (!dbFile.exists()) {
-                System.err.println("Fehler: Die Datei 'game.db' existiert nicht unter dem angegebenen Pfad.");
-                return;
+            // Überprüfen, ob der Ordner existiert, andernfalls erstellen
+            if (!dbFile.getParentFile().exists()) {
+                dbFile.getParentFile().mkdirs();  // Ordner erstellen, falls nicht vorhanden
             }
 
-            // Jetzt können wir den richtigen URL für die Verbindung setzen
-            String url = "jdbc:sqlite:" + dbFile.getAbsolutePath();
-            connection = DriverManager.getConnection(url);
+            // Überprüfen, ob die Datenbankdatei existiert und ggf. erstellen
+            if (!dbFile.exists()) {
+                dbFile.createNewFile(); // Neue Datei erstellen
+            }
+
+            // Verbindung zur SQLite-Datenbank herstellen
+            connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+            connection.setAutoCommit(true); // Automatische Bestätigung der Transaktionen
             System.out.println("Verbindung zur Datenbank erfolgreich.");
-        } catch (SQLException | NullPointerException | URISyntaxException e) {
-            System.err.println("Fehler bei der Verbindung zur Datenbank:");
+        } catch (SQLException | IOException e) {
+            System.err.println("Fehler bei der Verbindung zur Datenbank: " + e.getMessage());
             e.printStackTrace();
-            connection = null;
         }
     }
 
+    // Tabelle erstellen
     public void createTables() {
         if (connection == null) {
             System.err.println("Fehler: Verbindung zur Datenbank ist null!");
@@ -48,34 +51,26 @@ public class DatabaseManager {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT NOT NULL, " +
                 "score INTEGER NOT NULL)";
-        try (Statement stmt = connection.createStatement()) {
+
+        try (var stmt = connection.createStatement()) {
             stmt.execute(createTableSQL);
             System.out.println("Tabelle 'player' wurde erstellt.");
         } catch (SQLException e) {
+            System.err.println("Fehler bei der Erstellung der Tabelle:");
             e.printStackTrace();
         }
     }
 
-    public void disconnect() {
-        try {
-            if (connection != null) {
-                connection.close();
-                System.out.println("DB Verbindung geschlossen.");
-            }
-        } catch (SQLException e) {
-            System.err.println("Fehler beim Schließen der Datenbankverbindung:");
-            e.printStackTrace();
-        }
-    }
-
+    // Spieler in die Datenbank einfügen
     public void insertPlayer(String name, int score) {
         if (connection == null) {
-            System.err.println("Fehler: Keine Datenbankverbindung.");
+            System.err.println("Fehler: Verbindung zur Datenbank ist null!");
             return;
         }
 
-        String sql = "INSERT INTO player (name, score) VALUES (?, ?)";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        String insertSQL = "INSERT INTO player (name, score) VALUES (?, ?)";
+
+        try (var pstmt = connection.prepareStatement(insertSQL)) {
             pstmt.setString(1, name);
             pstmt.setInt(2, score);
             pstmt.executeUpdate();
@@ -86,24 +81,16 @@ public class DatabaseManager {
         }
     }
 
-    public List<String> getHighscores() {
-        if (connection == null) {
-            System.err.println("Fehler: Keine Datenbankverbindung.");
-            return new ArrayList<>();
-        }
-
-        List<String> highscores = new ArrayList<>();
-        String sql = "SELECT name, score FROM player ORDER BY score DESC LIMIT 10";
-
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                highscores.add(rs.getString("name") + ": " + rs.getInt("score"));
+    // Verbindung zur Datenbank schließen
+    public void disconnect() {
+        try {
+            if (connection != null) {
+                connection.close();
+                System.out.println("DB Verbindung geschlossen.");
             }
         } catch (SQLException e) {
+            System.err.println("Fehler beim Schließen der Verbindung:");
             e.printStackTrace();
         }
-
-        return highscores;
     }
 }
