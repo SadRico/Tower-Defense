@@ -5,11 +5,11 @@ import java.awt.*;
 public class Projectile {
     private double x, y;                    // Aktuelle Position des Projektils
     private double speed = 10.0;            // Geschwindigkeit des Projektils
-    private double dx, dy;                  // Bewegungsrichtung (normalisiert mit Speed multipliziert)
+    private double dx, dy;                  // Bewegungsrichtung (mit Speed multipliziert)
     private int size = 8;                   // Durchmesser des Projektils
-    private int damage;                     // Schaden, den das Projektil verursacht
+    private int damage;                     // Schaden vom Projektil
 
-    // Konstruktor – berechnet Flugrichtung basierend auf Start- und Zielposition
+    // Konstruktor berechnet Flugrichtung basierend auf Start- und Zielposition
     public Projectile(int startX, int startY, double targetX, double targetY, int damage) {
         this.x = startX;
         this.y = startY;
