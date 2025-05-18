@@ -5,13 +5,13 @@ import java.util.List;
 
 public class Tower {
     private int gridX, gridY;           // Gitterkoordinaten des Turms
-    private int x, y;                   // Pixelposition (abgeleitet von Gitterkoordinaten)
-    private int size;                   // Größe (Breite/Höhe) des Turms in Pixel
-    private int range = 150;           // Reichweite, in der Gegner erkannt werden
-    private int cooldown = 0;          // Aktueller Cooldown-Zähler
-    private int cooldownMax = 20;      // Maximale Cooldown-Zeit in Spielzyklen
+    private int x, y;                   // Pixelposition (Gitterkoordinaten)
+    private int size;                   // Größe des Turms in Pixel
+    private int range = 150;           // Reichweite in der Gegner erkannt werden
+    private int cooldown = 0;          // Aktueller Cooldown-Zähler (Feuerrate)
+    private int cooldownMax = 20;      // Maximale Cooldown-Zeit in Spielzyklen (Feuerrate)
 
-    // Konstruktor: Setzt Gitter- und Pixelposition sowie Turmgröße
+    // Setzt Gitter und Pixelposition sowie Turmgröße
     public Tower(int gridX, int gridY, int cellSize) {
         this.gridX = gridX;
         this.gridY = gridY;
@@ -25,6 +25,7 @@ public class Tower {
         return gridX;
     }
 
+    // Getter für Gitterposition
     public int getGridY() {
         return gridY;
     }
@@ -56,7 +57,7 @@ public class Tower {
         return null; // Kein Ziel gefunden
     }
 
-    // Erzeugt ein Projektil auf den gegebenen Gegner, setzt Cooldown zurück
+    // Erzeugt ein Projektil auf den anvisierten Gegner, setzt dann Cooldown zurück
     public Projectile fireAt(Enemy enemy) {
         cooldown = cooldownMax;
         return new Projectile(
@@ -73,7 +74,7 @@ public class Tower {
         g.setColor(Color.BLUE);
         g.fillRect(x, y, size, size);
 
-        // Reichweitenkreis
+        // Reichweitenindikator
         g.setColor(new Color(0, 0, 255, 50));
         g.fillOval(x + size/2 - range, y + size/2 - range, range*2, range*2);
     }

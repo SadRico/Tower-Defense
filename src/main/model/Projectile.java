@@ -9,13 +9,13 @@ public class Projectile {
     private int size = 8;                   // Durchmesser des Projektils
     private int damage;                     // Schaden vom Projektil
 
-    // Konstruktor berechnet Flugrichtung basierend auf Start- und Zielposition
+    // (Konstruktor) Berechnet Flugrichtung basierend auf Start- und Zielposition
     public Projectile(int startX, int startY, double targetX, double targetY, int damage) {
         this.x = startX;
         this.y = startY;
         this.damage = damage;
 
-        // Berechnung des Winkels und der Geschwindigkeitskomponenten
+        // Berechnung des Winkels und der Geschwindigkeit
         double angle = Math.atan2(targetY - startY, targetX - startX);
         dx = Math.cos(angle) * speed;
         dy = Math.sin(angle) * speed;
@@ -26,13 +26,13 @@ public class Projectile {
         return damage;
     }
 
-    // Bewegung in Richtung Ziel
+    // Bewegung in Richtung anvisierten Gegner
     public void move() {
         x += dx;
         y += dy;
     }
 
-    // Kollisionsprüfung mit einem Gegner (kreisbasierter Hit-Test)
+    // Kollisionsprüfung mit einem Gegner (kreisbasiert)
     public boolean collidesWith(Enemy enemy) {
         double distance = Math.sqrt(
                 Math.pow(enemy.getX() + enemy.getSize()/2 - x, 2) +
@@ -43,7 +43,7 @@ public class Projectile {
         return distance < (enemy.getSize()/2 + size/2);
     }
 
-    // Prüfung, ob das Projektil außerhalb des Spielfelds ist
+    // Prüfung, ob das Projektil OOB ist
     public boolean isOutOfBounds(int width, int height) {
         return x < 0 || x > width || y < 0 || y > height;
     }

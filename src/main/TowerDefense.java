@@ -13,19 +13,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-// Hauptklasse des Spiels, erbt von JFrame (GUI-Fenster)
+// Hauptklasse des Spiels, erbt von JFrame (GUI Fenster)
 public class TowerDefense extends JFrame {
-    private GamePanel gamePanel; // Zeichenfläche für das Spiel
-    private Controller controller; // Controller für Benutzereingaben
-    private JLabel scoreLabel;   // Anzeige für den Punktestand
-    private int score = 0;       // Aktueller Punktestand
+    private GamePanel gamePanel;    // Zeichenfläche für das Spiel
+    private Controller controller;  // Controller für Benutzereingaben
+    private JLabel scoreLabel;      // Anzeige für den Punktestand
+    private int score = 0;          // Aktueller Punktestand
 
     // Spielobjekte
     private List<Tower> towers = new ArrayList<>();
     private List<Enemy> enemies = new ArrayList<>();
     private List<Projectile> projectiles = new ArrayList<>();
 
-    // Start- und Endpunkt der Gegnerbewegung
+    // Start-/ Endpunkt der Gegnerbewegung
     private Point startPoint = new Point(0, 5);
     private Point endPoint = new Point(19, 5);
 
@@ -35,7 +35,7 @@ public class TowerDefense extends JFrame {
 
     private boolean gameOver = false; // Spielstatus
     private int enemiesDefeated = 0;  // Counter für besiegte Gegner
-    private int totalEnemies = 10;    // Gesamtanzahl der Gegner in einer Runde
+    private int totalEnemies = 20;    // Gesamtanzahl der Gegner in einer Runde
 
     private DatabaseManager dbManager; // Datenbankverwaltung für Highscores
 
@@ -45,7 +45,7 @@ public class TowerDefense extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout()); // Layout
 
-        // Controller initialisieren
+        // Controller initialisiereen
         controller = new Controller(this);
 
         // Panel für Punktestand
@@ -66,8 +66,8 @@ public class TowerDefense extends JFrame {
         // Spielstart
         startGame();
 
-        setLocationRelativeTo(null); // Zentriere Fenster
-        setVisible(true);            // Mache Fenster sichtbar
+        setLocationRelativeTo(null); // Zentriert Fenster
+        setVisible(true);            // Macht Window sichtbar
     }
 
     // Getter für Türme, Gegner, Projektile, Start-/Endpunkt und Spielstatus
@@ -78,11 +78,11 @@ public class TowerDefense extends JFrame {
     public Point getEndPoint() { return endPoint; }
     public boolean isGameOver() { return gameOver; }
 
-    // Platziert einen Turm auf dem Spielfeld, sofern erlaubt
+    // Platziert einen Turm auf dem Spielfeld, sofern möglich
     public void placeTower(int gridX, int gridY) {
         boolean towerExists = false;
 
-        // Prüfe, ob bereits ein Turm an der Position existiert
+        // Prüft ob bereits ein Turm an der Position existiert
         for (Tower tower : towers) {
             if (tower.getGridX() == gridX && tower.getGridY() == gridY) {
                 towerExists = true;
@@ -90,11 +90,11 @@ public class TowerDefense extends JFrame {
             }
         }
 
-        // Verhindere das Platzieren auf Start-/Endpunkt
+        // Verhindert das Platzieren auf Start-/Endpunkt
         boolean isSpecialPoint = (gridX == startPoint.x && gridY == startPoint.y) ||
                 (gridX == endPoint.x && gridY == endPoint.y);
 
-        // Turm hinzufügen, wenn erlaubt
+        // Turm hinzufügen, wenn möglich
         if (!towerExists && !isSpecialPoint) {
             towers.add(new Tower(gridX, gridY, Constants.CELL_SIZE));
         }
@@ -122,7 +122,7 @@ public class TowerDefense extends JFrame {
         });
         gameTimer.start();
 
-        // Timer für das regelmäßige Erzeugen von Gegnern
+        // Timer für das spawnen der Gegnern
         enemySpawnTimer = new Timer(2000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -146,7 +146,7 @@ public class TowerDefense extends JFrame {
         enemies.add(enemy);
     }
 
-    // Hauptspiel-Logik wird hier ausgeführt
+    // Hauptspiel-Logik
     private void updateGame() {
         if (gameOver) return;
 
@@ -156,7 +156,7 @@ public class TowerDefense extends JFrame {
             Enemy enemy = enemyIterator.next();
             enemy.move();
 
-            // Prüft, ob Gegner das Ziel erreicht
+            // Prüft ob Gegner das Ziel erreicht hat
             if (enemy.reachedDestination(
                     endPoint.x * Constants.CELL_SIZE,
                     endPoint.y * Constants.CELL_SIZE)) {
@@ -164,7 +164,7 @@ public class TowerDefense extends JFrame {
                 return;
             }
 
-            // Entfernt besiegte Gegner und erhöht Punktestand
+            // Entfernt tote Gegner und erhöht Punktestand
             if (enemy.getHealth() <= 0) {
                 enemyIterator.remove();
                 score += 100;
@@ -179,9 +179,9 @@ public class TowerDefense extends JFrame {
             }
         }
 
-        // Türme feuern auf Gegner
+        // Türme schießen auf Gegner
         for (Tower tower : towers) {
-            tower.decreaseCooldown();               // Schuss-Cooldown verringern
+            tower.decreaseCooldown();                 // Schuss-Cooldown verringern
             Enemy target = tower.findTarget(enemies); // Ziel finden
             if (target != null && tower.canFire()) {
                 Projectile projectile = tower.fireAt(target); // Projektil erzeugen
@@ -225,7 +225,7 @@ public class TowerDefense extends JFrame {
         String playerName = JOptionPane.showInputDialog(this, message + "\nGib deinen Namen ein:");
 
         if (playerName != null && !playerName.trim().isEmpty()) {
-            dbManager.saveHighscore(playerName, score); // Score speichern
+            dbManager.saveHighscore(playerName, score); // Score wird gespei9chert
 
             // Highscores abrufen und anzeigen
             List<String> highscores = dbManager.getTopHighscores(5);

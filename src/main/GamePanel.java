@@ -12,16 +12,16 @@ import java.awt.*;
 public class GamePanel extends JPanel {
     private TowerDefense gameInstance; // Referenz auf die Hauptspielinstanz
 
-    // Konstrukto erhält Instanz des Spiels und setzt Hintergrundfarbe
+    // (Konstruktor) Erhält Instanz des Spiels + Hintergrundfarbe
     public GamePanel(TowerDefense gameInstance, Controller controller) {
         this.gameInstance = gameInstance;
         setBackground(Color.WHITE); // Hintergrundfarbe des Spielfelds
 
-        // Mausklick-Listener zum Platzieren von Türmen von Controllerklasse
+        // Mausklick-Listener zum Platzieren von Türmen von der Controllerklasse
         addMouseListener(controller.createTowerPlacementListener());
     }
 
-    // Zeichnet das Spielfeld und alle Spielobjekte
+    // Zeichnet das Spielfeld/Spielobjekte
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); // Hintergrund löschen

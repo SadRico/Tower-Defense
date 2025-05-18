@@ -9,10 +9,10 @@ public class DatabaseManager {
     private Connection dbConnection; // Verbindung zur Datenbank
 
     public DatabaseManager() {
-        // Der Konstruktor lässt die Verbindung zunächst null, bis initializeDatabase aufgerufen wird
+        // Lässt Verbindung zunächst, bis initializeDatabase aufgerufen wird
     }
 
-    // Initialisiert die Datenbankverbindung und erstellt die Tabelle (falls nicht vorhanden)
+    // Initialisiert Datenbankverbindung und erstellt die Tabelle (falls nicht vorhanden)
     public void initializeDatabase() {
         try {
             // Verbindung zur Datenbank herstellen
@@ -31,14 +31,15 @@ public class DatabaseManager {
             statement.close();
             System.out.println("Datenbank erfolgreich initialisiert");
         } catch (SQLException e) {
-            // Bei Fehler: Konsolenausgabe + Fehlermeldung in Dialog anzeigen
+
+            // Konsolenausgabe + Fehlermeldung
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Fehler bei der Datenbankinitialisierung: " + e.getMessage(),
                     "Datenbankfehler", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Speichert einen neuen Highscore-Eintrag in der Datenbank
+    // Speichert neuen Highscore Eintrag in Datenbank
     public void saveHighscore(String playerName, int score) {
         try {
             // Vorbereitete SQL-Anweisung zur sicheren Übergabe von Parametern
@@ -46,7 +47,7 @@ public class DatabaseManager {
                     "INSERT INTO highscores (player_name, score) VALUES (?, ?)");
             pstmt.setString(1, playerName); // Spielername setzen
             pstmt.setInt(2, score);         // Punktestand setzen
-            pstmt.executeUpdate();          // Eintrag speichern
+            pstmt.executeUpdate();                      // Eintrag speichern
             pstmt.close();
             System.out.println("Highscore gespeichert");
         } catch (SQLException e) {
@@ -56,15 +57,15 @@ public class DatabaseManager {
         }
     }
 
-    // Holt die besten Highscores (nach Punktzahl sortiert, begrenzt auf „limit“)
+    // Holtbeste Highscores (nach Punktzahl sortiert, begrenzt auf "limit")
     public List<String> getTopHighscores(int limit) {
         List<String> highscores = new ArrayList<>();
         try {
             Statement stmt = dbConnection.createStatement();
 
-            // SQL-Abfrage: höchste Scores zuerst
+            // Höchste Scores zuerst
             ResultSet rs = stmt.executeQuery(
-                    "SELECT player_name, score FROM highscores ORDER BY score DESC LIMIT " + limit);
+                    "SELECT player_name, score FROM highscores ORDER BY score DESC LIMIT " + limit); // "DESC" = absteigend
 
             // Ergebnisse in Liste einfügen
             while (rs.next()) {
@@ -75,21 +76,10 @@ public class DatabaseManager {
 
             rs.close();
             stmt.close();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return highscores;
-    }
-
-    // Schließt die Verbindung zur Datenbank, wenn sie offen ist
-    public void closeConnection() {
-        try {
-            if (dbConnection != null && !dbConnection.isClosed()) {
-                dbConnection.close();
-                System.out.println("Datenbankverbindung geschlossen");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }
