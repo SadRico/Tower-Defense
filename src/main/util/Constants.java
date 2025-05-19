@@ -2,7 +2,7 @@ package main.util;
 
 public class Constants {
     // Spielfenster
-    public static final int WIDTH = 800;
+    public static final int WIDTH = 815;
     public static final int HEIGHT = 600;
     
     // Spielgrid

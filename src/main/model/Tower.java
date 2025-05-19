@@ -75,7 +75,7 @@ public class Tower {
         g.fillRect(x, y, size, size);
 
         // Reichweitenindikator
-        g.setColor(new Color(0, 0, 255, 50));
+        g.setColor(new Color(0, 0, 255, 20));
         g.fillOval(x + size/2 - range, y + size/2 - range, range*2, range*2);
     }
 }
